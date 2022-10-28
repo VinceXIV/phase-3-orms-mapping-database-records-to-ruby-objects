@@ -16,6 +16,26 @@ class Song
     DB[:conn].execute(sql)
   end
 
+  def self.new_from_db(row)
+    self.new(id: row[0], name: row[1], album: row[2])
+  end
+
+  def self.all
+    sql = <<-SQL
+      SELECT * FROM songs
+    SQL
+
+    DB[:conn].execute(sql).map do |row|
+      new_from_db(row)
+    end
+  end
+
+  def self.find_by_name(name)
+    self.all.find do |song|
+      song.name == name
+    end
+  end
+
   def self.create_table
     sql = <<-SQL
       CREATE TABLE IF NOT EXISTS songs (
